@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import { google } from "googleapis";
 
+// https://turbo-spoon-szcy.onrender.com/
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -9,57 +11,59 @@ app.use(express.json());
 app.get("/health", (req, res) => res.json({ ok: true }));
 
 function makeOAuthClient() {
-  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = process.env;
+   const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = process.env;
 
-  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_REDIRECT_URI) {
-    throw new Error("Missing GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REDIRECT_URI");
-  }
+   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_REDIRECT_URI) {
+      throw new Error("Missing GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REDIRECT_URI");
+   }
 
-  return new google.auth.OAuth2(
-    GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET,
-    GOOGLE_REDIRECT_URI
-  );
+   return new google.auth.OAuth2(
+      GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET,
+      GOOGLE_REDIRECT_URI
+   );
 }
 
 app.get("/auth/google", (req, res) => {
-  const oauth2Client = makeOAuthClient();
+   const oauth2Client = makeOAuthClient();
 
-  const url = oauth2Client.generateAuthUrl({
-    access_type: "offline",
-    prompt: "consent",
-    scope: [
-      "https://www.googleapis.com/auth/gmail.readonly"
-    ],
-  });
+   const url = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      prompt: "consent",
+      scope: [
+         "https://www.googleapis.com/auth/gmail.readonly"
+      ],
+   });
 
-  res.redirect(url);
+   res.redirect(url);
 });
 
 // Step 2: Google redirects back here with ?code=...
 app.get("/auth/google/callback", async (req, res) => {
-  const code = req.query.code;
-  if (!code) return res.status(400).send("Missing code");
+   const code = req.query.code;
+   if (!code) return res.status(400).send("Missing code");
 
-  const oauth2Client = makeOAuthClient();
+   const oauth2Client = makeOAuthClient();
 
-  try {
-    const { tokens } = await oauth2Client.getToken(code);
+   try {
+      const { tokens } = await oauth2Client.getToken(code);
 
-    res.json({
-      ok: true,
-      message: "OAuth succeeded. Tokens received.",
-      gotRefreshToken: Boolean(tokens.refresh_token),
-      tokenInfo: {
-        scope: tokens.scope,
-        token_type: tokens.token_type,
-        expiry_date: tokens.expiry_date,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("OAuth token exchange failed");
-  }
+      console.log("REFRESH TOKEN:", tokens.refresh_token);
+
+      res.json({
+         ok: true,
+         message: "OAuth succeeded. Tokens received.",
+         gotRefreshToken: Boolean(tokens.refresh_token),
+         tokenInfo: {
+            scope: tokens.scope,
+            token_type: tokens.token_type,
+            expiry_date: tokens.expiry_date,
+         },
+      });
+   } catch (err) {
+      console.error(err);
+      res.status(500).send("OAuth token exchange failed");
+   }
 });
 
 const PORT = process.env.PORT || 3000;
