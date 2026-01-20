@@ -38,7 +38,7 @@ app.get("/auth/google", (req, res) => {
    res.redirect(url);
 });
 
-// Step 2: Google redirects back here with ?code=...
+// Step 2: Google redirects back here.
 app.get("/auth/google/callback", async (req, res) => {
    const code = req.query.code;
    if (!code) return res.status(400).send("Missing code");
@@ -48,7 +48,7 @@ app.get("/auth/google/callback", async (req, res) => {
    try {
       const { tokens } = await oauth2Client.getToken(code);
 
-      console.log("REFRESH TOKEN:", tokens.refresh_token);
+      // console.log("REFRESH TOKEN:", tokens.refresh_token);
 
       res.json({
          ok: true,
@@ -64,6 +64,56 @@ app.get("/auth/google/callback", async (req, res) => {
       console.error(err);
       res.status(500).send("OAuth token exchange failed");
    }
+});
+
+function makeAuthedOAuthClient() {
+  const { GOOGLE_REFRESH_TOKEN } = process.env;
+  if (!GOOGLE_REFRESH_TOKEN) throw new Error("Missing GOOGLE_REFRESH_TOKEN");
+
+  const oauth2Client = makeOAuthClient();
+  oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN });
+  return oauth2Client;
+}
+
+app.get("/api/emails/recent", async (req, res) => {
+  try {
+    const auth = makeAuthedOAuthClient();
+    const gmail = google.gmail({ version: "v1", auth });
+
+    const list = await gmail.users.messages.list({
+      userId: "me",
+      maxResults: 5,
+      q: "newer_than:7d", // last week; adjust as you like
+    });
+
+    const ids = list.data.messages?.map(m => m.id).filter(Boolean) ?? [];
+
+    const results = [];
+    for (const id of ids) {
+      const msg = await gmail.users.messages.get({
+        userId: "me",
+        id,
+        format: "metadata",
+        metadataHeaders: ["From", "Subject", "Date"],
+      });
+
+      const headers = msg.data.payload?.headers ?? [];
+      const getHeader = (name) => headers.find(h => h.name === name)?.value ?? "";
+
+      results.push({
+        id,
+        from: getHeader("From"),
+        subject: getHeader("Subject"),
+        date: getHeader("Date"),
+        snippet: msg.data.snippet ?? "",
+      });
+    }
+
+    res.json({ ok: true, emails: results });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: String(err?.message ?? err) });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
