@@ -1,30 +1,82 @@
+import { useState, useEffect } from 'react'
 import './EmailMessages.css'
 
+function formatDate(dateString) {
+  const date = new Date(dateString)
+
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  })
+}
+
 function EmailMessages() {
-  // Sample email data - this will eventually come from the backend
-  const emails = [
-    {
-      id: 1,
-      subject: "Weekly Team Update",
-      sender: "team@example.com",
-      date: "2026-01-20",
-      summary: "Project milestones achieved this week. Team velocity improved by 15%. Next sprint planning scheduled."
-    },
-    {
-      id: 2,
-      subject: "Customer Feedback Review",
-      sender: "support@example.com",
-      date: "2026-01-19",
-      summary: "Positive feedback on new features. Users requesting mobile app improvements and faster load times."
-    },
-    {
-      id: 3,
-      subject: "Monthly Analytics Report",
-      sender: "analytics@example.com",
-      date: "2026-01-18",
-      summary: "User engagement up 23%. Conversion rate increased to 4.2%. Top performing feature: email summaries."
+  const [emails, setEmails] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchEmails = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        const response = await fetch('/api/emails/recent')
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+
+        if (!data.ok) {
+          throw new Error(data.error || 'Failed to fetch emails')
+        }
+
+        // Map backend fields to frontend fields
+        const mappedEmails = data.emails.map(email => ({
+          id: email.id,
+          subject: email.subject == "" ? "(no subject)" : email.subject,
+          sender: email.from,
+          date: email.date,
+          summary: email.snippet
+        }))
+
+        setEmails(mappedEmails)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchEmails()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="email-messages">
+        <div className="email-card">
+          <p>Loading emails...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="email-messages">
+        <div className="email-card">
+          <p className="email-error">Error: {error}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="email-messages">
@@ -32,7 +84,7 @@ function EmailMessages() {
         <div key={email.id} className="email-card">
           <div className="email-header">
             <h3>{email.subject}</h3>
-            <span className="email-date">{email.date}</span>
+            <span className="email-date">{formatDate(email.date)}</span>
           </div>
           <div className="email-sender">{email.sender}</div>
           <p className="email-summary">{email.summary}</p>
