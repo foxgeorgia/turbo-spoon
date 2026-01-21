@@ -1,19 +1,6 @@
 import { useState, useEffect } from 'react'
+import EmailCard from './EmailCard'
 import './EmailMessages.css'
-
-function formatDate(dateString) {
-  const date = new Date(dateString)
-
-  return date.toLocaleString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  })
-}
 
 function EmailMessages() {
   const [emails, setEmails] = useState([])
@@ -112,7 +99,7 @@ function EmailMessages() {
   if (loading) {
     return (
       <div className="email-messages">
-        <div className="email-card">
+        <div className="email-loading">
           <p>Loading emails...</p>
         </div>
       </div>
@@ -122,7 +109,7 @@ function EmailMessages() {
   if (error) {
     return (
       <div className="email-messages">
-        <div className="email-card">
+        <div className="email-error-container">
           <p className="email-error">Error: {error}</p>
         </div>
       </div>
@@ -132,51 +119,12 @@ function EmailMessages() {
   return (
     <div className="email-messages">
       {emails.map(email => (
-        <div key={email.id} className="email-card">
-          <div className="email-header">
-            <h3>{email.subject}</h3>
-            <span className="email-date">{formatDate(email.date)}</span>
-          </div>
-
-          <div className="email-sender">{email.sender}</div>
-
-          {/* show snippet first */}
-          <p className="email-summary">{email.snippet}</p>
-
-          <button
-            onClick={() => summarizeEmail(email)}
-            disabled={summarizingId === email.id}
-            className="email-summarize-btn"
-          >
-            {summarizingId === email.id ? 'Summarizing…' : 'Summarize'}
-          </button>
-
-          {/* show LLM summary if present */}
-          {email.llmSummary && (
-            <div className="email-llm">
-              <div className="email-llm-summary">
-                <strong>LLM Summary:</strong> {email.llmSummary}
-              </div>
-
-              {email.actionItems?.length > 0 && (
-                <div className="email-llm-actions">
-                  <strong>Action items:</strong>
-                  <ul>
-                    {email.actionItems.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {email.needsReply !== null && (
-                <div className="email-llm-reply">
-                  <strong>Needs reply:</strong> {email.needsReply ? 'Yes' : 'No'}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        <EmailCard
+          key={email.id}
+          email={email}
+          onSummarize={summarizeEmail}
+          isSummarizing={summarizingId === email.id}
+        />
       ))}
     </div>
   )
