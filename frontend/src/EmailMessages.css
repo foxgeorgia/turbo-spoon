@@ -56,3 +56,17 @@
 .email-error {
   color: #d73a49;
 }
+
+.email-summarize-btn {
+  margin-top: 8px;
+}
+
+.email-llm {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.email-llm-summary {
+  margin-bottom: 8px;
+}
