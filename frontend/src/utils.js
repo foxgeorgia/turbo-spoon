@@ -2,9 +2,10 @@
 export function decodeHtmlEntities(text) {
   if (!text) return text;
   
-  const textArea = document.createElement('textarea');
-  textArea.innerHTML = text;
-  return textArea.value;
+  // Use DOMParser for safer HTML entity decoding
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text, 'text/html');
+  return doc.documentElement.textContent;
 }
 
 // Format date for display

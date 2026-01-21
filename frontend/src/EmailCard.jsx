@@ -5,7 +5,7 @@ import './EmailMessages.css';
 function EmailCard({ email, onSummarize, isSummarizing }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleCardClick = async (e) => {
+  const handleCardClick = (e) => {
     // Don't toggle if clicking on a link or other interactive element
     if (e.target.tagName === 'A' || e.target.closest('a')) {
       return;

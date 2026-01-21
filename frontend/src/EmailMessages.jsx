@@ -30,7 +30,7 @@ function EmailMessages() {
         // Map backend fields to frontend fields
         const mappedEmails = data.emails.map(email => ({
           id: email.id,
-          subject: email.subject == "" ? "(no subject)" : email.subject,
+          subject: email.subject === "" ? "(no subject)" : email.subject,
           sender: email.from,
           date: email.date,
           snippet: email.snippet,
