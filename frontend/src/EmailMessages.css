@@ -52,3 +52,7 @@
   line-height: 1.6;
   margin: 0;
 }
+
+.email-error {
+  color: #d73a49;
+}

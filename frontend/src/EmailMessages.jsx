@@ -13,6 +13,11 @@ function EmailMessages() {
         setError(null)
         
         const response = await fetch('/api/emails/recent')
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
         const data = await response.json()
         
         if (!data.ok) {
@@ -53,7 +58,7 @@ function EmailMessages() {
     return (
       <div className="email-messages">
         <div className="email-card">
-          <p style={{ color: 'red' }}>Error: {error}</p>
+          <p className="email-error">Error: {error}</p>
         </div>
       </div>
     )
