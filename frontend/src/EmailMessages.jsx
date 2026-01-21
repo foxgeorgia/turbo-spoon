@@ -1,30 +1,63 @@
+import { useState, useEffect } from 'react'
 import './EmailMessages.css'
 
 function EmailMessages() {
-  // Sample email data - this will eventually come from the backend
-  const emails = [
-    {
-      id: 1,
-      subject: "Weekly Team Update",
-      sender: "team@example.com",
-      date: "2026-01-20",
-      summary: "Project milestones achieved this week. Team velocity improved by 15%. Next sprint planning scheduled."
-    },
-    {
-      id: 2,
-      subject: "Customer Feedback Review",
-      sender: "support@example.com",
-      date: "2026-01-19",
-      summary: "Positive feedback on new features. Users requesting mobile app improvements and faster load times."
-    },
-    {
-      id: 3,
-      subject: "Monthly Analytics Report",
-      sender: "analytics@example.com",
-      date: "2026-01-18",
-      summary: "User engagement up 23%. Conversion rate increased to 4.2%. Top performing feature: email summaries."
+  const [emails, setEmails] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchEmails = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        const response = await fetch('/api/emails/recent')
+        const data = await response.json()
+        
+        if (!data.ok) {
+          throw new Error(data.error || 'Failed to fetch emails')
+        }
+        
+        // Map backend fields to frontend fields
+        const mappedEmails = data.emails.map(email => ({
+          id: email.id,
+          subject: email.subject,
+          sender: email.from,
+          date: email.date,
+          summary: email.snippet
+        }))
+        
+        setEmails(mappedEmails)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchEmails()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="email-messages">
+        <div className="email-card">
+          <p>Loading emails...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="email-messages">
+        <div className="email-card">
+          <p style={{ color: 'red' }}>Error: {error}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="email-messages">
