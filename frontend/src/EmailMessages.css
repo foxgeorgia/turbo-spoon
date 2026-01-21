@@ -1,0 +1,51 @@
+.email-messages {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.email-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s;
+}
+
+.email-card:hover {
+  border-color: #646cff;
+}
+
+.email-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.email-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fff;
+  flex: 1;
+}
+
+.email-date {
+  color: #888;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.email-sender {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.email-summary {
+  color: #ccc;
+  line-height: 1.6;
+  margin: 0;
+}

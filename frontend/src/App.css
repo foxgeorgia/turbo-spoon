@@ -1,16 +1,4 @@
 .app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.app h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-}
-
-.app p {
-  font-size: 1.2rem;
-  color: #888;
+  width: 100%;
+  min-height: 100vh;
 }

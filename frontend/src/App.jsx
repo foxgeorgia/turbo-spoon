@@ -1,10 +1,10 @@
 import './App.css'
+import EmailMessages from './EmailMessages'
 
 function App() {
   return (
     <div className="app">
-      <h1>Turbo Spoon</h1>
-      <p>Email summaries</p>
+      <EmailMessages />
     </div>
   )
 }
