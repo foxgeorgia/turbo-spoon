@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#FFF3C4"></rect>
+
+  <!-- Spoon (single connected shape) -->
+  <path d="
+      M40 10
+      C33 10 28 15 28 21
+      C28 26 31 30 35 32
+      L18 46
+      C16 48 16 51 18 53
+      C20 55 23 55 25 53
+      L42 34
+      C46 31 50 26 50 21
+      C50 15 46 10 40 10
+      Z
+    " fill="#FBBF24" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" transform="rotate(25 32 32)"></path>
+</svg>
