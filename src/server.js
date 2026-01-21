@@ -80,6 +80,39 @@ function makeAuthedOAuthClient() {
    return oauth2Client;
 }
 
+// Helper to extract email body from Gmail payload
+function extractEmailBody(payload) {
+   if (!payload) return "";
+
+   // Check if there's a direct body
+   if (payload.body?.data) {
+      return Buffer.from(payload.body.data, "base64").toString("utf-8");
+   }
+
+   // Check multipart
+   if (payload.parts) {
+      for (const part of payload.parts) {
+         // Prefer text/plain
+         if (part.mimeType === "text/plain" && part.body?.data) {
+            return Buffer.from(part.body.data, "base64").toString("utf-8");
+         }
+      }
+      // Fallback to text/html
+      for (const part of payload.parts) {
+         if (part.mimeType === "text/html" && part.body?.data) {
+            return Buffer.from(part.body.data, "base64").toString("utf-8");
+         }
+      }
+      // Recursively check nested parts
+      for (const part of payload.parts) {
+         const body = extractEmailBody(part);
+         if (body) return body;
+      }
+   }
+
+   return "";
+}
+
 app.get("/api/emails/recent", async (req, res) => {
    try {
       const auth = makeAuthedOAuthClient();
@@ -98,12 +131,13 @@ app.get("/api/emails/recent", async (req, res) => {
          const msg = await gmail.users.messages.get({
             userId: "me",
             id,
-            format: "metadata",
-            metadataHeaders: ["From", "Subject", "Date"],
+            format: "full",
          });
 
          const headers = msg.data.payload?.headers ?? [];
          const getHeader = (name) => headers.find(h => h.name === name)?.value ?? "";
+
+         const body = extractEmailBody(msg.data.payload);
 
          results.push({
             id,
@@ -111,6 +145,7 @@ app.get("/api/emails/recent", async (req, res) => {
             subject: getHeader("Subject"),
             date: getHeader("Date"),
             snippet: msg.data.snippet ?? "",
+            body: body || msg.data.snippet || "",
          });
       }
 
