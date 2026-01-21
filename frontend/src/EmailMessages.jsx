@@ -38,6 +38,8 @@ function EmailMessages() {
           llmSummary: null,
           actionItems: [],
           needsReply: null,
+          isRead: false, // Default all emails to unread
+          isSummarized: false, // Default all emails to not summarized
         }))
 
         setEmails(mappedEmails)
@@ -85,6 +87,7 @@ function EmailMessages() {
               llmSummary: data.summary ?? null,
               actionItems: Array.isArray(data.action_items) ? data.action_items : [],
               needsReply: typeof data.needs_reply === 'boolean' ? data.needs_reply : null,
+              isSummarized: true, // Mark as summarized after successful summary
             }
             : e
         )
@@ -94,6 +97,14 @@ function EmailMessages() {
     } finally {
       setSummarizingId(null)
     }
+  }
+
+  const markAsRead = (emailId) => {
+    setEmails(prev =>
+      prev.map(e =>
+        e.id === emailId ? { ...e, isRead: true } : e
+      )
+    )
   }
 
   if (loading) {
@@ -123,6 +134,7 @@ function EmailMessages() {
           key={email.id}
           email={email}
           onSummarize={summarizeEmail}
+          onMarkAsRead={markAsRead}
           isSummarizing={summarizingId === email.id}
         />
       ))}
