@@ -20,7 +20,7 @@ function EmailCard({ email, onSummarize, onMarkAsRead, isSummarizing }) {
     }
 
     // Auto-generate summary when expanding if not already present
-    if (newExpandedState && !email.llmSummary && !isSummarizing) {
+    if (newExpandedState && !isSummarizing && !email.isSummarized && !email.llmSummary) {
       onSummarize(email);
     }
   };
