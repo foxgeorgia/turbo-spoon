@@ -94,7 +94,21 @@ function EmailMessages() {
           }
         })
 
-        setEmails(mappedEmails)
+        // Sort emails by date (newest first)
+        // Parse date strings safely, invalid dates go to the end
+        const sortedEmails = mappedEmails.sort((a, b) => {
+          const dateA = new Date(a.date)
+          const dateB = new Date(b.date)
+          
+          // Handle invalid dates by treating them as oldest
+          const timeA = isNaN(dateA.getTime()) ? 0 : dateA.getTime()
+          const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime()
+          
+          // Sort descending (newest first)
+          return timeB - timeA
+        })
+
+        setEmails(sortedEmails)
       } catch (err) {
         setError(err.message)
       } finally {
