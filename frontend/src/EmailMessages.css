@@ -1,20 +1,23 @@
 .email-messages {
   max-width: 800px;
+  width: 100%;
   margin: 2rem auto;
   padding: 0 1rem;
 }
 
 .email-card {
-  background-color: #1a1a1a;
-  border: 1px solid #333;
+  background-color: #ffffff;
+  border: 1px solid #e1e4e8;
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .email-card:hover {
   border-color: #646cff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .email-header {
@@ -28,24 +31,24 @@
 .email-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: #fff;
+  color: #1a1a1a;
   flex: 1;
 }
 
 .email-date {
-  color: #888;
+  color: #6a737d;
   font-size: 0.875rem;
   white-space: nowrap;
 }
 
 .email-sender {
-  color: #aaa;
+  color: #586069;
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
 }
 
 .email-summary {
-  color: #ccc;
+  color: #24292e;
   line-height: 1.6;
   margin: 0;
 }
