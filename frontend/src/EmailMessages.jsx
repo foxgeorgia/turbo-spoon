@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react'
 import './EmailMessages.css'
 
+function formatDate(dateString) {
+  const date = new Date(dateString)
+
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  })
+}
+
 function EmailMessages() {
   const [emails, setEmails] = useState([])
   const [loading, setLoading] = useState(true)
@@ -11,28 +25,28 @@ function EmailMessages() {
       try {
         setLoading(true)
         setError(null)
-        
+
         const response = await fetch('/api/emails/recent')
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        
+
         const data = await response.json()
-        
+
         if (!data.ok) {
           throw new Error(data.error || 'Failed to fetch emails')
         }
-        
+
         // Map backend fields to frontend fields
         const mappedEmails = data.emails.map(email => ({
           id: email.id,
-          subject: email.subject,
+          subject: email.subject == "" ? "(no subject)" : email.subject,
           sender: email.from,
           date: email.date,
           summary: email.snippet
         }))
-        
+
         setEmails(mappedEmails)
       } catch (err) {
         setError(err.message)
@@ -70,7 +84,7 @@ function EmailMessages() {
         <div key={email.id} className="email-card">
           <div className="email-header">
             <h3>{email.subject}</h3>
-            <span className="email-date">{email.date}</span>
+            <span className="email-date">{formatDate(email.date)}</span>
           </div>
           <div className="email-sender">{email.sender}</div>
           <p className="email-summary">{email.summary}</p>
