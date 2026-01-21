@@ -24,6 +24,7 @@ function makeOAuthClient() {
    );
 }
 
+// Google sign in
 app.get("/auth/google", (req, res) => {
    const oauth2Client = makeOAuthClient();
 
@@ -38,7 +39,7 @@ app.get("/auth/google", (req, res) => {
    res.redirect(url);
 });
 
-// Step 2: Google redirects back here.
+// Google redirects
 app.get("/auth/google/callback", async (req, res) => {
    const code = req.query.code;
    if (!code) return res.status(400).send("Missing code");
@@ -83,7 +84,7 @@ app.get("/api/emails/recent", async (req, res) => {
     const list = await gmail.users.messages.list({
       userId: "me",
       maxResults: 5,
-      q: "newer_than:7d", // last week; adjust as you like
+      q: "newer_than:7d", 
     });
 
     const ids = list.data.messages?.map(m => m.id).filter(Boolean) ?? [];
