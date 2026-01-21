@@ -1,8 +1,4 @@
 .app {
   width: 100%;
-  min-height: 100vh;
-  background-color: #f5f7fa;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  max-width: 900px; 
 }

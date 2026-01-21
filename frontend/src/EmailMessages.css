@@ -1,22 +1,22 @@
 .email-messages {
-  max-width: 800px;
+  max-width: 600px;
   width: 100%;
   margin: 2rem auto;
   padding: 0 1rem;
 }
 
 .email-card {
-  background-color: #ffffff;
-  border: 1px solid #e1e4e8;
-  border-radius: 8px;
+  background-color: #fffaf2;
+  border: 1px solid #eadfce;
+  border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   transition: all 0.3s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
 .email-card:hover {
-  border-color: #646cff;
+  border-color: #d7dbf0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
