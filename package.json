@@ -3,11 +3,18 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "npm --prefix frontend install && npm --prefix frontend run build",
+    "dev": "concurrently \"npm start\" \"npm --prefix frontend run dev\"",
     "start": "node src/server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^4.19.2",
-    "googleapis": "^170.1.0"
+    "googleapis": "^170.1.0",
+    "openai": "^6.16.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }
